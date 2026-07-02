@@ -25,7 +25,7 @@ type matchDetail struct {
 	} `json:"participantIdentities"`
 }
 
-func GetMatchHistory(client *http.Client, auth lockfile.LCUAuth, puuid string) ([]int64, error) {
+func GetMatchHistory(client *http.Client, auth lockfile.LCUAuth, puuid string) ([]int64, error) { //GameIDを返す
 	matchHistory, err := get(client, auth, fmt.Sprintf("/lol-match-history/v1/products/lol/%s/matches", puuid))
 	if err != nil {
 		return nil, err
@@ -50,16 +50,19 @@ func GetMatchHistory(client *http.Client, auth lockfile.LCUAuth, puuid string) (
 	return ids, nil
 }
 
+// GetMatchDetail は指定 gameId の試合詳細を取得し、参加者全員の puuid を返す。
 func GetMatchDetail(client *http.Client, auth lockfile.LCUAuth, gameID int64) ([]string, error) {
 	body, err := get(client, auth, fmt.Sprintf("/lol-match-history/v1/games/%d", gameID))
 	if err != nil {
 		return nil, err
 	}
 	var detail matchDetail
-	err = json.Unmarshal(body, &detail)
-	participantId := make([]string, 0, len(detail.ParticipantData))
-	for _, g := range detail.ParticipantData {
-		participantId = append(participantId, g.PlayerDetail.PUUID)
+	if err := json.Unmarshal(body, &detail); err != nil {
+		return nil, fmt.Errorf("JSONのパースに失敗: %w", err)
 	}
-	return participantId, err
+	puuids := make([]string, 0, len(detail.ParticipantData))
+	for _, p := range detail.ParticipantData {
+		puuids = append(puuids, p.PlayerDetail.PUUID)
+	}
+	return puuids, nil
 }

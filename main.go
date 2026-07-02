@@ -27,13 +27,15 @@ func run() error {
 	if err != nil {
 		return err
 	}
+	puuidsPerMatch := make(map[int64][]string, len(matchHistory))
 	for _, gameID := range matchHistory {
 		puuids, err := lcu.GetMatchDetail(client, auth, gameID)
 		if err != nil {
 			return err
 		}
-		fmt.Printf("gameId=%d: %v\n", gameID, puuids)
+		puuidsPerMatch[gameID] = puuids
 	}
+	fmt.Println(puuidsPerMatch)
 	return nil
 }
 

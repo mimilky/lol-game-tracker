@@ -51,8 +51,6 @@ go mod tidy
 - 実行・テストともに **LoL クライアント（`LeagueClientUx.exe`）起動中**が前提（`lockfile.Path()` がプロセスを要求）。テストは実機統合テスト（詳細は [docs/lcu.md](docs/lcu.md)）。
 - Windows 専用（`golang.org/x/sys/windows` 依存）。
 
-> Note: この Windows チェックアウトは大文字小文字を区別しないため、`CLAUDE.md` と `claude.md` は**同一ファイル**。
-
 ---
 
 # 設計仕様
